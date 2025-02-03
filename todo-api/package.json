@@ -4,6 +4,7 @@
   "description": "todo api",
   "main": "index.js",
   "scripts": {
+    "build": "npm install && tsc",
     "start": "nodemon --exec ts-node index.ts"
   },
   "keywords": [],
