@@ -1,35 +1,42 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from "react";
+import TodoList from "./components/TodoList";
+import Todo from "./models/todo";
+import todoService from "./services/todoService";
+import NewTodo from "./components/NewTodo";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [todos, setTodos] = useState<Todo[]>([]);
+
+  const loadTodos = async () => {
+    const todos = await todoService.getAll();
+    setTodos(todos);
+  };
+
+  const deleteTodo = async (id: string) => {
+    await todoService.delete(id);
+    loadTodos();
+  };
+
+  const completeTodo = async (id: string) => {
+    await todoService.complete(id);
+    loadTodos();
+  };
+
+  const addTodo = async (title: string) => {
+    await todoService.create(title);
+    loadTodos();
+  };
+
+  useEffect(() => {
+    loadTodos();
+  }, []);
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <NewTodo onAddTodo={addTodo} />
+      <TodoList todos={todos} onComplete={completeTodo} onDelete={deleteTodo} />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
